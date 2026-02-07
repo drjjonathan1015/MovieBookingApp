@@ -1,0 +1,54 @@
+[
+  {
+    "title": "Avatar: Fire and Ash",
+    "language": "English",
+    "duration": "3h 17m",
+    "status": "now showing",
+    "description": "Superhero action movie",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Avatar_Fire_and_Ash_poster.jpeg/250px-Avatar_Fire_and_Ash_poster.jpeg",
+    "shows": [
+      {
+        "date": "2026-02-01",
+        "time": "18:30",
+        "price": 500
+      },
+      {
+        "date": "2026-02-02",
+        "time": "21:30",
+        "price": 600
+      }
+    ]
+  },
+  {
+    "title": "Leo",
+    "language": "Tamil",
+    "duration": "2h 45m",
+    "status": "now showing",
+    "description": "Action thriller movie",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/7/75/Leo_%282023_Indian_film%29.jpg",
+    "shows": [
+      {
+        "date": "2026-02-05",
+        "time": "19:00",
+        "price": 400
+      }
+    ]
+  },
+    {
+    "title": "Avengers Domesday",
+    "language": "English",
+    "duration": "3h 2m",
+    "status": "coming soon",
+    "description": "Superhero action movie",
+    "poster": "https://upload.wikimedia.org/wikipedia/en/e/ee/Avengers_Doomsday_poster.jpg",
+    "shows": [
+      {
+        "date": "2026-02-05",
+        "time": "19:00",
+        "price": 400
+      }
+    ]
+  }
+]
+
+
