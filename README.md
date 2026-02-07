@@ -1,413 +1,284 @@
-# 🎬 CinemaX - Movie Booking Application (Corrected & Enhanced)
+# 🎬 CinemaX - Movie Booking Application (Complete Version)
 
-## 🔧 What's Been Fixed & Improved
-
-### **Critical Fixes**
-
-1. **Firebase Security**
-   - ✅ Added environment variable support for Firebase config
-   - ✅ Credentials should now be in `.env` file
-   - ✅ Added Firebase persistence for offline support
-
-2. **Router Issues**
-   - ✅ Fixed async auth state handling in route guards
-   - ✅ Added proper redirect after login
-   - ✅ Added route meta data (titles, auth requirements)
-   - ✅ Added 404 page handling
-   - ✅ Added scroll behavior
-
-3. **Authentication**
-   - ✅ Fixed login/register validation
-   - ✅ Added comprehensive error handling
-   - ✅ User-friendly error messages
-   - ✅ Added Google Sign-In
-   - ✅ Added password reset functionality
-   - ✅ Added password strength indicator
-   - ✅ Added show/hide password toggle
-
-4. **Component Issues**
-   - ✅ Fixed movie filtering logic
-   - ✅ Added proper loading states
-   - ✅ Added error boundaries
-   - ✅ Fixed image alt attributes
-   - ✅ Added responsive design
+A modern **Progressive Web App (PWA)** for booking movies across theaters. Built with **Vue 3**, **Vite**, **Firebase**, and **Tailwind CSS**, this app allows users to browse movies, select seats, book tickets, view history, and use offline features. Admins can manage movies, shows, and bookings via the admin dashboard.
 
 ---
 
-## 🚀 New Features Added
+## 🚀 Features
 
-### **UI/UX Improvements**
-- 🌓 Dark/Light theme toggle
-- 🔍 Search functionality with real-time filtering
-- 🎭 Genre and language filters
-- 📊 Sort by title, rating, or duration
-- ⭐ Movie ratings display
-- 🎨 Modern glassmorphism design
-- 📱 Fully responsive mobile design
-- ✨ Smooth animations and transitions
-- 👤 User dropdown menu
-- 🦶 Footer with information
+### **User Features**
+- User Registration & Login (Email/Password + Google)
+- Email verification & password reset
+- Browse movies (Now Showing / Coming Soon)
+- Filter movies by genre, language, rating
+- Search movies by title
+- Seat selection for shows
+- Download PDF tickets with QR code
+- Booking history
+- PWA installable & offline ready
 
-### **User Experience**
-- 💾 Remember me option
-- 👁️ Show/hide password
-- 🔑 Forgot password functionality
-- 📧 Email validation
-- 📞 Phone number validation
-- 🔐 Password strength indicator
-- ⚠️ Better error messages
-- ⏳ Loading indicators
-- ✅ Form validation feedback
+### **Admin Features**
+- Add/Edit/Delete movies
+- Add/Edit/Delete shows
+- Manage bookings
+- Admin dashboard with role-based access
+- Real-time data updates via Firestore
 
-### **Performance**
-- ⚡ Lazy loading ready
-- 💾 Offline persistence
-- 🎯 Optimized queries
-- 🔄 Proper state management
+### **UI/UX Enhancements**
+- Dark/Light theme toggle
+- Responsive mobile-first design
+- Loading indicators & error feedback
+- Smooth transitions & animations
+- User dropdown menu with profile & logout
 
 ---
 
-## 📦 Installation & Setup
+## 📦 Tech Stack
 
-### **1. Install Dependencies**
-```bash
-npm install
-```
-
-### **2. Environment Variables**
-Create a `.env` file in the root directory:
-
-```env
-# Firebase Configuration
-VITE_FIREBASE_API_KEY=your_api_key_here
-VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain_here
-VITE_FIREBASE_PROJECT_ID=your_project_id_here
-VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket_here
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id_here
-VITE_FIREBASE_APP_ID=your_app_id_here
-VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id_here
-```
-
-**IMPORTANT:** Never commit `.env` to version control!
-
-Add to `.gitignore`:
-```
-.env
-.env.local
-.env.*.local
-```
-
-### **3. Firebase Setup**
-
-#### Firestore Collections Structure:
-
-**movies** collection:
-```javascript
-{
-  title: "Movie Title",
-  poster: "https://image-url.jpg",
-  language: "English",
-  duration: "2h 30m",
-  genre: "Action",
-  rating: 8.5,
-  description: "Movie description...",
-  status: "now showing", // or "coming soon"
-  releaseDate: "2026-02-01" // For coming soon movies
-}
-```
-
-**shows** collection:
-```javascript
-{
-  movieId: "movie_document_id",
-  date: "2026-01-30",
-  time: "7:00 PM",
-  price: 200,
-  theater: "Theater 1"
-}
-```
-
-**seats** collection:
-```javascript
-{
-  showId: "show_document_id",
-  seatNumber: "A1",
-  isBooked: false,
-  price: 200
-}
-```
-
-**bookings** collection:
-```javascript
-{
-  userId: "user_uid",
-  showId: "show_document_id",
-  seats: ["A1", "A2"],
-  totalPrice: 400,
-  createdAt: Timestamp
-}
-```
-
-**users** collection:
-```javascript
-{
-  name: "User Name",
-  email: "user@email.com",
-  phone: "+94123456789",
-  createdAt: Timestamp,
-  updatedAt: Timestamp
-}
-```
-
-#### Firebase Security Rules:
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    
-    // Users collection
-    match /users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    // Movies collection (public read, admin write)
-    match /movies/{movieId} {
-      allow read: if true;
-      allow write: if request.auth != null; // Add admin check later
-    }
-    
-    // Shows collection (public read, admin write)
-    match /shows/{showId} {
-      allow read: if true;
-      allow write: if request.auth != null; // Add admin check later
-    }
-    
-    // Seats collection
-    match /seats/{seatId} {
-      allow read: if true;
-      allow update: if request.auth != null;
-      allow create: if request.auth != null;
-    }
-    
-    // Bookings collection
-    match /bookings/{bookingId} {
-      allow read: if request.auth != null && 
-                     request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && 
-                       request.auth.uid == request.resource.data.userId;
-      allow update, delete: if request.auth != null && 
-                              request.auth.uid == resource.data.userId;
-    }
-  }
-}
-```
-
-### **4. Run Development Server**
-```bash
-npm run dev
-```
-
-### **5. Build for Production**
-```bash
-npm run build
-```
+| Category   | Technology                     |
+| ---------- | ------------------------------ |
+| Frontend   | Vue 3 (Composition API)        |
+| Build Tool | Vite                           |
+| Styling    | Tailwind CSS                   |
+| Backend    | Firebase (Auth + Firestore)    |
+| PDF        | jsPDF                          |
+| QR Code    | qrcode                         |
+| PWA        | Vite PWA Plugin                |
 
 ---
 
-## 📁 Updated File Structure
+## 📁 Project Structure
 
-```
 movie-booking-app/
 ├── public/
+│ └── icons/ (PWA icons)
 ├── src/
-│   ├── components/
-│   │   ├── Home.vue (✅ Enhanced with search & filters)
-│   │   ├── Movies.vue (✅ Improved)
-│   │   ├── MovieDetails.vue (✅ Enhanced)
-│   │   ├── SeatSelection.vue (✅ Better UX)
-│   │   ├── MyBookings.vue (✅ Detailed view)
-│   │   ├── Login.vue (✅ Complete rewrite)
-│   │   ├── Register.vue (✅ Complete rewrite)
-│   │   ├── Profile.vue (✅ New component)
-│   │   └── NotFound.vue (✅ New 404 page)
-│   ├── router/
-│   │   └── index.js (✅ Fixed route guards)
-│   ├── App.vue (✅ Enhanced with theme toggle)
-│   ├── firebase.js (✅ Secured with env vars)
-│   └── main.js
-├── .env (⚠️ Create this file!)
-├── .env.example
+│ ├── assets/
+│ ├── components/
+│ │ ├── Home.vue
+│ │ ├── Movies.vue
+│ │ ├── MovieDetails.vue
+│ │ ├── SeatSelection.vue
+│ │ ├── MyBookings.vue
+│ │ ├── Login.vue
+│ │ ├── Register.vue
+│ │ ├── Profile.vue
+│ │ └── NotFound.vue
+│ ├── views/
+│ │ ├── Admin/
+│ │ │ ├── Dashboard.vue
+│ │ │ ├── MoviesList.vue
+│ │ │ ├── AddMovie.vue
+│ │ │ ├── EditMovie.vue
+│ │ │ ├── ShowsList.vue
+│ │ │ └── EditShow.vue
+│ ├── router/
+│ │ └── index.js
+│ ├── firebase/
+│ │ └── firebase.js
+│ ├── App.vue
+│ └── main.js
+├── .env
 ├── .gitignore
 ├── package.json
 ├── vite.config.js
 └── README.md
-```
 
 ---
 
-## 🐛 Bug Fixes Summary
+## 🔧 Installation & Setup
 
-### **Router Issues**
-**Problem:** Route guard was calling `onAuthStateChanged` on every navigation, causing async issues.
-**Solution:** Use synchronous `auth.currentUser` which is already loaded by the time navigation happens.
+1️⃣ **Clone the Repository**
+```bash
+git clone https://github.com/your-username/cinemax-movie-booking.git
+cd cinemax-movie-booking
 
-### **Firebase Security**
-**Problem:** Firebase credentials exposed in code.
-**Solution:** Move to environment variables with `.env` file.
+2️⃣ Install Dependencies
 
-### **Error Handling**
-**Problem:** Generic error messages, no validation feedback.
-**Solution:** Comprehensive validation, user-friendly error messages, visual feedback.
+npm install
 
-### **UX Issues**
-**Problem:** No loading states, no feedback for user actions.
-**Solution:** Loading spinners, success messages, disabled states, smooth transitions.
 
-### **Responsive Design**
-**Problem:** Not mobile-friendly.
-**Solution:** Added responsive CSS with mobile-first approach.
+3️⃣ Environment Variables
+Create .env in project root:
 
----
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
 
-## 🎯 Testing Checklist
 
-- [ ] User can register with email/password
-- [ ] User can register with Google
-- [ ] User can login with email/password
-- [ ] User can login with Google
-- [ ] User can reset password
-- [ ] Protected routes redirect to login
-- [ ] User can search movies
-- [ ] User can filter by genre/language
-- [ ] User can sort movies
-- [ ] User can view movie details
-- [ ] User can select seats
-- [ ] User can complete booking
-- [ ] User can view booking history
-- [ ] User can logout
-- [ ] Theme toggle works
-- [ ] Mobile responsive design works
-- [ ] Offline persistence works
+⚠️ Never commit .env to Git. Add it to .gitignore:
 
----
+.env
+.env.local
+.env.*.local
 
-## 🚀 Next Steps & Recommendations
 
-### **Immediate Priority**
-1. Set up `.env` file with your Firebase credentials
-2. Configure Firebase Security Rules
-3. Add sample data to Firestore
-4. Test all authentication flows
-5. Test booking flow
+4️⃣ Run Development Server
 
-### **Short Term (Week 1-2)**
-1. Create Profile component
-2. Create NotFound (404) component
-3. Add payment integration (Razorpay/Stripe)
-4. Add email notifications
-5. Create admin panel
+npm run dev
 
-### **Medium Term (Month 1)**
-1. Add movie trailers
-2. Add reviews and ratings
-3. Add food & beverage ordering
-4. Implement QR code tickets
-5. Add analytics
 
-### **Long Term (Month 2-3)**
-1. PWA implementation
-2. Push notifications
-3. Multi-theater support
-4. Recommendation engine
-5. Mobile apps (Capacitor)
+5️⃣ Build for Production
 
----
+npm run build
 
-## 📚 Dependencies Required
 
-```json
+6️⃣ Firebase Hosting Deployment
+
+npm install -g firebase-tools
+firebase login
+firebase init
+firebase deploy
+
+🔐 Firebase Setup
+
+Collections Structure:
+
+movies
+
 {
-  "dependencies": {
-    "vue": "^3.4.0",
-    "vue-router": "^4.3.0",
-    "pinia": "^2.1.0",
-    "firebase": "^10.7.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.0",
-    "vite": "^5.0.0"
+  "title": "Movie Title",
+  "poster": "url_to_image",
+  "language": "English",
+  "duration": "2h 30m",
+  "genre": "Action",
+  "rating": 8.5,
+  "description": "Movie description",
+  "status": "now showing",
+  "releaseDate": "2026-02-01"
+}
+
+
+shows
+
+{
+  "movieId": "movie_doc_id",
+  "date": "2026-02-10",
+  "time": "7:00 PM",
+  "price": 200,
+  "theater": "Theater 1"
+}
+
+
+seats
+
+{
+  "showId": "show_doc_id",
+  "seatNumber": "A1",
+  "isBooked": false,
+  "price": 200
+}
+
+
+bookings
+
+{
+  "userId": "user_uid",
+  "showId": "show_doc_id",
+  "seats": ["A1","A2"],
+  "totalPrice": 400,
+  "createdAt": "Timestamp"
+}
+
+
+users
+
+{
+  "name": "User Name",
+  "email": "user@email.com",
+  "phone": "+94123456789",
+  "createdAt": "Timestamp",
+  "updatedAt": "Timestamp"
+}
+
+
+Security Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    match /movies/{movieId} {
+      allow read: if true;
+      allow write: if request.auth != null; // add admin check
+    }
+    match /shows/{showId} {
+      allow read: if true;
+      allow write: if request.auth != null; // add admin check
+    }
+    match /seats/{seatId} {
+      allow read: if true;
+      allow update, create: if request.auth != null;
+    }
+    match /bookings/{bookingId} {
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
   }
 }
-```
 
----
+📱 PWA Support
 
-## 🔐 Security Best Practices
+Add to Home Screen (mobile/desktop)
 
-1. **Never commit** `.env` files
-2. **Enable** Firebase Security Rules
-3. **Validate** all user inputs
-4. **Sanitize** data before storing
-5. **Use HTTPS** in production
-6. **Enable** Firebase App Check
-7. **Implement** rate limiting
-8. **Add** CAPTCHA for auth forms
-9. **Regular** security audits
-10. **Keep dependencies** updated
+Offline caching using Workbox
 
----
+Splash screen & icons
 
-## 💡 Performance Tips
+Installable on supported browsers
 
-1. Use lazy loading for routes
-2. Implement virtual scrolling for long lists
-3. Optimize images (WebP format)
-4. Use CDN for static assets
-5. Enable Firebase persistence
-6. Implement proper caching
-7. Code splitting
-8. Tree shaking
+✅ Testing Checklist
 
----
+ Register/Login (email + Google)
 
-## 🤝 Contributing
+ Forgot password
 
-If you want to contribute:
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+ Movie search & filters
 
----
+ Seat selection
 
-## 📄 License
+ Booking creation
 
-MIT License - Feel free to use this project for learning or commercial purposes.
+ PDF download with QR code
 
----
+ Booking history
 
-## 💬 Support
+ Admin dashboard CRUD
 
-If you encounter any issues:
-1. Check Firebase console for errors
-2. Check browser console for JavaScript errors
-3. Verify environment variables are set correctly
-4. Ensure Firebase Security Rules are configured
-5. Check network tab for API errors
+ Theme toggle
 
----
+ Mobile responsiveness
 
-## 🎉 Credits
+ Offline caching
 
-Built with:
-- Vue 3 (Composition API)
-- Firebase (Authentication & Firestore)
-- Vite (Build tool)
-- Modern CSS (Flexbox & Grid)
+🧰 Future Enhancements
 
----
+Payment gateway integration
 
-**Happy Coding! 🚀**
+SMS/Email notifications
+
+Multi-language support
+
+Push notifications
+
+Admin analytics
+
+Recommendation engine
+
+👨‍💻 Author
+
+G.D. Jonathan
+BSc (Hons) Computer Science – SEUSL
+Sri Lanka
+
+📄 License
+
+MIT License – For educational & learning purposes.
+
+Enjoy building and using CinemaX! 🎬🚀
