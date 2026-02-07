@@ -500,9 +500,9 @@ MIT License - see [LICENSE](LICENSE) file
 
 ## 📧 Contact
 
-**Project Link:** [https://github.com/yourusername/cinemax-booking](https://github.com/yourusername/cinemax-booking)
+**Project Link:** [https://github.com/drjjonathan1015/MovieBookingApp](https://github.com/drjjonathan1015/MovieBookingApp)
 
-**Issues:** [GitHub Issues](https://github.com/yourusername/cinemax-booking/issues)
+**Issues:** [GitHub Issues](https://github.com/drjjonathan1015/MovieBookingApp/issues)
 
 ---
 
